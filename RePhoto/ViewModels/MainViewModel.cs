@@ -12,21 +12,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-
+using RePhoto.ViewModels;
 
 namespace RePhoto
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
-        public MainViewModel()
-        {
-            this.Items = new ObservableCollection<ItemViewModel>();
-        }
+        private ObservableCollection<ItemViewModel> actionItems = new ObservableCollection<ItemViewModel>();
 
-        /// <summary>
-        /// A collection for ItemViewModel objects.
-        /// </summary>
-        public ObservableCollection<ItemViewModel> Items { get; private set; }
+        public ObservableCollection<ItemViewModel> ActionItems
+        {
+            get { return actionItems; }
+            set
+            {
+                if (actionItems != null && actionItems != value)
+                {
+                    actionItems = value;
+                }
+                NotifyPropertyChanged("actionItems");
+            }
+        }
 
         private string _sampleProperty = "Sample Runtime Property Value";
         /// <summary>
@@ -49,34 +54,19 @@ namespace RePhoto
             }
         }
 
-        public bool IsDataLoaded
-        {
-            get;
-            private set;
-        }
-
         /// <summary>
-        /// Creates and adds a few ItemViewModel objects into the Items collection.
+        /// Creates and adds a few ItemViewModel objects into the actionItems collection.
         /// </summary>
-        public void LoadData()
+        public override void LoadData()
         {
             // Sample data; replace with real data
-            this.Items.Add(new ItemViewModel() { LineOne = "view projects", LineTwo = "Maecenas praesent accumsan bibendum", LineThree = "Facilisi faucibus habitant inceptos interdum lobortis nascetur pharetra placerat pulvinar sagittis senectus sociosqu" });
-            this.Items.Add(new ItemViewModel() { LineOne = "personal rephoto", LineTwo = "Dictumst eleifend facilisi faucibus", LineThree = "Suscipit torquent ultrices vehicula volutpat maecenas praesent accumsan bibendum dictumst eleifend facilisi faucibus" });
-            this.Items.Add(new ItemViewModel() { LineOne = "settings", LineTwo = "Habitant inceptos interdum lobortis", LineThree = "Habitant inceptos interdum lobortis nascetur pharetra placerat pulvinar sagittis senectus sociosqu suscipit torquent" });
-            this.Items.Add(new ItemViewModel() { LineOne = "about", LineTwo = "Nascetur pharetra placerat pulvinar", LineThree = "Ultrices vehicula volutpat maecenas praesent accumsan bibendum dictumst eleifend facilisi faucibus habitant inceptos" });
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "view actionItems", LineTwo = "Maecenas praesent accumsan bibendum", LineThree = "Facilisi faucibus habitant inceptos interdum lobortis nascetur pharetra placerat pulvinar sagittis senectus sociosqu" });
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "personal rephoto", LineTwo = "Dictumst eleifend facilisi faucibus", LineThree = "Suscipit torquent ultrices vehicula volutpat maecenas praesent accumsan bibendum dictumst eleifend facilisi faucibus" });
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "settings", LineTwo = "Habitant inceptos interdum lobortis", LineThree = "Habitant inceptos interdum lobortis nascetur pharetra placerat pulvinar sagittis senectus sociosqu suscipit torquent" });
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "about", LineTwo = "Nascetur pharetra placerat pulvinar", LineThree = "Ultrices vehicula volutpat maecenas praesent accumsan bibendum dictumst eleifend facilisi faucibus habitant inceptos" });
 
             this.IsDataLoaded = true;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(String propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (null != handler)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }

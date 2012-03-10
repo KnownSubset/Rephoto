@@ -25,7 +25,7 @@ namespace RePhoto
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
-        // Load data for the ViewModel Items
+        // Load data for the ViewModel actionItems
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             if (!App.ViewModel.IsDataLoaded)
