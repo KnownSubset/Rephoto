@@ -11,11 +11,36 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+
 namespace RePhoto
 {
+    #region Classes
     public class ItemViewModel : INotifyPropertyChanged
     {
+        #region Events of ItemViewModel
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion Events of ItemViewModel
+
+        #region Members of ItemViewModel
+        private string _imageUri;
         private string _lineOne;
+        private string _lineThree;
+        private string _lineTwo;
+        #endregion Members of ItemViewModel
+
+        #region Properties of ItemViewModel
+        public string ImageUri
+        {
+            get { return _imageUri; }
+            set
+            {
+                if (value != _imageUri)
+                {
+                    _imageUri = value;
+                    NotifyPropertyChanged("ImageUri");
+                }
+            }
+        }
         /// <summary>
         /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
         /// </summary>
@@ -35,31 +60,6 @@ namespace RePhoto
                 }
             }
         }
-
-        private string _lineTwo;
-        /// <summary>
-        /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
-        /// </summary>
-        /// <returns></returns>
-        public string LineTwo
-        {
-            get
-            {
-                return _lineTwo;
-            }
-            set
-            {
-                if (value != _lineTwo)
-                {
-                    _lineTwo = value;
-                    NotifyPropertyChanged("LineTwo");
-                }
-            }
-        }
-
-        private string _lineThree;
-        private string _imageUri;
-
         /// <summary>
         /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
         /// </summary>
@@ -79,17 +79,28 @@ namespace RePhoto
                 }
             }
         }
-
-        public string ImageUri
+        /// <summary>
+        /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
+        /// </summary>
+        /// <returns></returns>
+        public string LineTwo
         {
-            get { return _imageUri; }
-            set { if (value != _imageUri) {
-                _imageUri = value;
-                NotifyPropertyChanged("ImageUri");
-            } }
+            get
+            {
+                return _lineTwo;
+            }
+            set
+            {
+                if (value != _lineTwo)
+                {
+                    _lineTwo = value;
+                    NotifyPropertyChanged("LineTwo");
+                }
+            }
         }
+        #endregion Properties of ItemViewModel
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        #region Methods of ItemViewModel
         private void NotifyPropertyChanged(String propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -98,5 +109,7 @@ namespace RePhoto
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+        #endregion Methods of ItemViewModel
     }
+    #endregion Classes
 }
