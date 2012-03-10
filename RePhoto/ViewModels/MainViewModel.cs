@@ -60,10 +60,8 @@ namespace RePhoto
         public override void LoadData()
         {
             // Sample data; replace with real data
-            this.ActionItems.Add(new ItemViewModel() { LineOne = "view actionItems", LineTwo = "Maecenas praesent accumsan bibendum", LineThree = "Facilisi faucibus habitant inceptos interdum lobortis nascetur pharetra placerat pulvinar sagittis senectus sociosqu" });
-            this.ActionItems.Add(new ItemViewModel() { LineOne = "personal rephoto", LineTwo = "Dictumst eleifend facilisi faucibus", LineThree = "Suscipit torquent ultrices vehicula volutpat maecenas praesent accumsan bibendum dictumst eleifend facilisi faucibus" });
-            this.ActionItems.Add(new ItemViewModel() { LineOne = "settings", LineTwo = "Habitant inceptos interdum lobortis", LineThree = "Habitant inceptos interdum lobortis nascetur pharetra placerat pulvinar sagittis senectus sociosqu suscipit torquent" });
-            this.ActionItems.Add(new ItemViewModel() { LineOne = "about", LineTwo = "Nascetur pharetra placerat pulvinar", LineThree = "Ultrices vehicula volutpat maecenas praesent accumsan bibendum dictumst eleifend facilisi faucibus habitant inceptos" });
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "view projects", LineTwo = "find citizen Rephoto projects near you"});
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "personal rephoto", LineTwo = "take some personal Rehoto pictures"});
 
             this.IsDataLoaded = true;
         }
