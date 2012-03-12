@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using Microsoft.Xna.Framework.Media;
@@ -55,7 +57,6 @@ namespace RePhoto {
                 var fileName = Guid.NewGuid().ToString("N") + ".jpg";
                 // Save picture to the library camera roll.
                 library.SavePictureToCameraRoll(fileName, e.ImageStream);
-
                 // Set the position of the stream back to start
                 e.ImageStream.Seek(0, SeekOrigin.Begin);
 
@@ -78,6 +79,15 @@ namespace RePhoto {
                         bytes.RemoveRange((int)targetStream.Length, (int)(bytes.Count - targetStream.Length));
                     }
                 }
+                var picture = new BitmapImage();
+                using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    using (IsolatedStorageFileStream fileStream = myIsolatedStorage.OpenFile("temp.dat", FileMode.Open, FileAccess.Read))
+                    {
+                        picture.SetSource(fileStream);
+                    }
+                }
+                cameraViewModel.Picture = picture;
             }
             catch (Exception exception)
             {
@@ -94,7 +104,7 @@ namespace RePhoto {
         private void cam_CaptureImageCompleted(object sender, ContentReadyEventArgs e) {
             Deployment.Current.Dispatcher.BeginInvoke(() => {
                                                           lock (this) {
-                                                              cameraInUse = false;
+                                                              //cameraViewModel.CameraInUse = false;
                                                           }
                                                       });
         }
@@ -113,9 +123,18 @@ namespace RePhoto {
         }
 
         private void CameraCaptureClick(object sender, EventArgs e) {
-            CameraInUse = true;
+            cameraViewModel.CameraInUse = true;
+            camera.Focus();
         }
 
-        private void CameraCaptureTap(object sender, GestureEventArgs e) {}
+        private void CameraCaptureTap(object sender, GestureEventArgs e) {
+            cameraViewModel.CameraInUse = true;
+            camera.Focus();
+        }
+
+        private void SavePhoto(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

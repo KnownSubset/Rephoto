@@ -98,6 +98,9 @@ namespace RePhoto
                 }
             }
         }
+
+        public string NavigationUri { get; set; }
+
         #endregion Properties of ItemViewModel
 
         #region Methods of ItemViewModel

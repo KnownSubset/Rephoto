@@ -60,8 +60,8 @@ namespace RePhoto
         public override void LoadData()
         {
             // Sample data; replace with real data
-            this.ActionItems.Add(new ItemViewModel() { LineOne = "view projects", LineTwo = "find citizen Rephoto projects near you"});
-            this.ActionItems.Add(new ItemViewModel() { LineOne = "personal rephoto", LineTwo = "take some personal Rehoto pictures"});
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "view projects", LineTwo = "find citizen Rephoto projects near you", NavigationUri = "/ProjectsPage.xaml" });
+            this.ActionItems.Add(new ItemViewModel() { LineOne = "personal rephoto", LineTwo = "take some personal Rehoto pictures", NavigationUri = "/Rephoto.xaml"});
 
             this.IsDataLoaded = true;
         }
