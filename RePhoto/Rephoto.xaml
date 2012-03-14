@@ -18,18 +18,19 @@
         <Canvas.Background>
           <VideoBrush x:Name="viewFinderBrush">
             <VideoBrush.RelativeTransform>
-              <CompositeTransform x:Name="cameraViewBrushTransform" CenterX=".5" CenterY=".5" />
+              <CompositeTransform x:Name="previewTransform" CenterX=".5" CenterY=".5" Rotation="90" />
             </VideoBrush.RelativeTransform>
           </VideoBrush>
         </Canvas.Background>
       </Canvas>
       <Canvas>
+        <Image MaxWidth="480" MaxHeight="800" Source="{Binding Picture}" Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" Stretch="Fill" />
         <Image Source="{Binding OverlayedPicture}" Opacity="{Binding MaskOpacityLevel}">
           <Image.OpacityMask>
             <ImageBrush ImageSource="{Binding OpacityMask}" Stretch="None" />
           </Image.OpacityMask>
         </Image>
-        <Image Source="{Binding Picture}" Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" />
+        <!--<ProgressBar VerticalAlignment="Center"></ProgressBar>-->
       </Canvas>
       <Grid Visibility="{Binding Picture, Converter={StaticResource NotNullToVisibilityConverter}}">
         <Grid.RowDefinitions>
@@ -66,8 +67,8 @@
       </StackPanel>
 
       <StackPanel Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-        <Button Content="Accept" Width="200" Click="SavePhoto" Background="{StaticResource PhoneSemitransparentBrush}"/>
-        <Button Content="Retake" Width="200" Click="RetakePhoto" Background="{StaticResource PhoneSemitransparentBrush}"/>
+        <Button Content="Accept" Width="200" Click="SavePhoto" Background="{StaticResource PhoneSemitransparentBrush}" />
+        <Button Content="Retake" Width="200" Click="RetakePhoto" Background="{StaticResource PhoneSemitransparentBrush}" />
       </StackPanel>
     </Grid>
   </Grid>

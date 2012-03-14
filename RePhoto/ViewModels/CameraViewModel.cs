@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Xna.Framework.Media;
@@ -13,9 +14,12 @@ namespace RePhoto.ViewModels {
         private double maskOpacityLevel = .5;
         private int maskSizeLevel = 25;
         private WriteableBitmap opacityMask;
-        private ImageSource overlayedPicture;
+        private WriteableBitmap overlayedPicture;
         private BitmapImage picture;
         private KeyValuePair<string, Action> selectedFill;
+        private int width = 480;
+        private int height = 800;
+        private WriteableBitmap resizedOverlay;
 
         public CameraViewModel()
         {
@@ -37,7 +41,8 @@ namespace RePhoto.ViewModels {
             }
         }
 
-        public ImageSource OverlayedPicture {
+        public WriteableBitmap OverlayedPicture
+        {
             get { return overlayedPicture; }
             set {
                 overlayedPicture = value;
@@ -96,18 +101,21 @@ namespace RePhoto.ViewModels {
         }
 
         public IDictionary<string, Action> Fills { get; set; }
-        public double ImageWidth { get; set; }
-        public double ImageHeight { get; set; }
+        public void SetImageSize(Size resolution){
+            this.width = (int) resolution.Width;
+            this.height = (int) resolution.Height;
+        }
+        
 
         public void CheckerBoard() {
-            var opacityMask = new WriteableBitmap((int)ImageWidth, (int)ImageHeight);
-            for (int i = 0; i < ImageWidth/MaskSizeLevel; i += 2) {
-                for (int j = 0; j < ImageHeight/MaskSizeLevel; j += 2) {
+            var opacityMask = new WriteableBitmap(width, height);
+            for (int i = 0; i < width/MaskSizeLevel; i += 2) {
+                for (int j = 0; j < height/MaskSizeLevel; j += 2) {
                     opacityMask.FillRectangle(i*MaskSizeLevel, j*MaskSizeLevel, (i + 1)*MaskSizeLevel, (j + 1)*MaskSizeLevel,Colors.Black);
                 }
             }
-            for (int i = 1; i < ImageWidth/MaskSizeLevel; i += 2) {
-                for (int j = 1; j < ImageHeight/MaskSizeLevel; j += 2) {
+            for (int i = 1; i < width/MaskSizeLevel; i += 2) {
+                for (int j = 1; j < height/MaskSizeLevel; j += 2) {
                     opacityMask.FillRectangle(i*MaskSizeLevel, j*MaskSizeLevel, (i + 1)*MaskSizeLevel, (j + 1)*MaskSizeLevel,Colors.Black);
                 }
             }
@@ -115,23 +123,23 @@ namespace RePhoto.ViewModels {
         }
 
         private void VerticalLines() {
-            var opacityMask = new WriteableBitmap((int)ImageWidth, (int)ImageHeight);
-            for (int i = 0; i < ImageWidth/MaskSizeLevel; i += 2) {
-                opacityMask.FillRectangle(i * MaskSizeLevel, 0, (i + 1) * MaskSizeLevel, (int)ImageHeight, Colors.Black);
+            var opacityMask = new WriteableBitmap(width, height);
+            for (int i = 0; i < width/MaskSizeLevel; i += 2) {
+                opacityMask.FillRectangle(i * MaskSizeLevel, 0, (i + 1) * MaskSizeLevel, height, Colors.Black);
             }
             OpacityMask = opacityMask;
         }
 
         private void HorizontalLines() {
-            var opacityMask = new WriteableBitmap((int)ImageWidth, (int)ImageHeight);
-            for (int j = 0; j < ImageHeight/MaskSizeLevel; j += 2) {
-                opacityMask.FillRectangle(0, j * MaskSizeLevel, (int)ImageWidth, (j + 1) * MaskSizeLevel, Colors.Black);
+            var opacityMask = new WriteableBitmap(width, height);
+            for (int j = 0; j < height/MaskSizeLevel; j += 2) {
+                opacityMask.FillRectangle(0, j * MaskSizeLevel, width, (j + 1) * MaskSizeLevel, Colors.Black);
             }
             OpacityMask = opacityMask;
         }
 
         private void FullScreen() {
-            var writeableBitmap = new WriteableBitmap((int) ImageWidth,(int) ImageHeight);
+            var writeableBitmap = new WriteableBitmap(width,height);
             writeableBitmap.Clear(Colors.Black);
             OpacityMask = writeableBitmap;
         }
@@ -139,7 +147,8 @@ namespace RePhoto.ViewModels {
         public override void LoadData() {}
 
         public void SavePhoto() {
-            var writeableBitmap = new WriteableBitmap(picture);
+            var writeableBitmap = new WriteableBitmap(picture).Rotate(90);
+            resizedOverlay = OverlayedPicture.Resize(writeableBitmap.PixelWidth, writeableBitmap.PixelHeight, WriteableBitmapExtensions.Interpolation.Bilinear);
             writeableBitmap.ForEach(Fill);
               // Create a virtual store and file stream. Check for duplicate tempJPEG files.
             string tempJPEG = CreateFileName();
@@ -158,13 +167,23 @@ namespace RePhoto.ViewModels {
         }
 
         private Color Fill(int x, int y, Color originalColor) {
-            Color maskColor = OpacityMask.GetPixel(x, y);
-            bool isBlank = maskColor.A == 0;
-            return isBlank ? originalColor : maskColor;
+            bool isPixelTransparent = OpacityMask.GetPixel(x, y).A == 0;
+            Color pixel = isPixelTransparent ? originalColor : resizedOverlay.GetPixel(x, y);
+            return isPixelTransparent ? originalColor : AverageColors(originalColor, pixel);
+        }
+
+        private Color AverageColors(Color originalColor, Color pixel) {
+            var color = new Color();
+            color.A = (byte) ((originalColor.A + pixel.A)/2);
+            color.R = (byte) ((originalColor.R + pixel.R)/2);
+            color.G = (byte) ((originalColor.G + pixel.G)/2);
+            color.B = (byte) ((originalColor.B + pixel.B)/2);
+            return color;
         }
 
         private string CreateFileName() {
-            return Guid.NewGuid().ToString() + ".jpg";
+            return Guid.NewGuid() + ".jpg";
         }
+
     }
 }

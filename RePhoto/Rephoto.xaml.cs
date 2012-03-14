@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
@@ -20,8 +21,10 @@ namespace RePhoto {
             InitializeComponent();
             StartCameraService();
             DataContext = cameraViewModel;
-            var overlayedPicture = new BitmapImage(new Uri("/SplashScreenImage.jpg", UriKind.Relative));
-            cameraViewModel.OverlayedPicture = overlayedPicture;
+            var overlayedPicture = new BitmapImage();
+            overlayedPicture.CreateOptions = BitmapCreateOptions.None;
+            overlayedPicture.UriSource = new Uri("/SplashScreenImage.jpg", UriKind.Relative);
+            cameraViewModel.OverlayedPicture = new WriteableBitmap(overlayedPicture);
         }
 
         private void StartCameraService() {
@@ -45,8 +48,8 @@ namespace RePhoto {
         private void cam_Initialized(object sender, CameraOperationCompletedEventArgs e) {
             if (e.Succeeded) {
                 cameraInitialized = true;
-                cameraViewModel.ImageWidth = camera.Resolution.Width;
-                cameraViewModel.ImageHeight = camera.Resolution.Height;
+                cameraViewModel.SetImageSize(camera.Resolution);
+                Deployment.Current.Dispatcher.BeginInvoke(() => cameraViewModel.SelectedFill.Value.Invoke());
             }
         }
 
@@ -80,6 +83,30 @@ namespace RePhoto {
                 e.ImageStream.Close();
             }
         }
+/*
+        // Ensure that the viewfinder is upright in LandscapeRight.
+        protected override void OnOrientationChanged(OrientationChangedEventArgs e) {
+            if (camera != null) {
+                // LandscapeRight rotation when camera is on back of device.
+                int landscapeRightRotation = 180;
+                // Change LandscapeRight rotation for front-facing camera.
+                if (camera.CameraType == CameraType.FrontFacing) {
+                    landscapeRightRotation = -180;
+                }
+                // Rotate video brush from camera.
+                if (e.Orientation == PageOrientation.LandscapeRight) {
+                    // Rotate for LandscapeRight orientation.
+                    viewFinderBrush.RelativeTransform =
+                        new CompositeTransform {CenterX = 0.5, CenterY = 0.5, Rotation = landscapeRightRotation};
+                } else {
+                    // Rotate for standard landscape orientation.
+                    viewFinderBrush.RelativeTransform =
+                        new CompositeTransform {CenterX = 0.5, CenterY = 0.5, Rotation = 0};
+                }
+            }
+
+            base.OnOrientationChanged(e);
+        }*/
 
         private void ReadImage() {
             using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication()) {
@@ -120,6 +147,7 @@ namespace RePhoto {
 
         private void SavePhoto(object sender, RoutedEventArgs e) {
             cameraViewModel.SavePhoto();
+            cameraViewModel.Picture = null;
         }
 
         private void RetakePhoto(object sender, RoutedEventArgs e) {
