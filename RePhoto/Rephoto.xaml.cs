@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Devices;
@@ -26,10 +27,6 @@ namespace RePhoto
             DataContext = cameraViewModel;
             var overlayedPicture = new BitmapImage(new Uri("/SplashScreenImage.jpg", UriKind.Relative));
             cameraViewModel.OverlayedPicture = overlayedPicture;
-            var opacityMask = new WriteableBitmap(480, 800);
-            opacityMask.Clear(Color.FromArgb(0, 0,0,0));
-            opacityMask.FillRectangle(100, 300, 300, 600, Colors.Black);
-            cameraViewModel.OpacityMask = opacityMask;
         }
 
 
@@ -156,8 +153,9 @@ namespace RePhoto
 
         private void ConfigureSettings(object sender, RoutedEventArgs e)
         {
-            cameraViewModel.ConfiguringSettings = true;
-            cameraViewModel.CameraInUse = true;
+            bool configuringSettings = !cameraViewModel.ConfiguringSettings;
+            cameraViewModel.ConfiguringSettings = configuringSettings;
+            cameraViewModel.CameraInUse = configuringSettings;
         }
 
         private void CameraCaptureTap(object sender, GestureEventArgs e)
