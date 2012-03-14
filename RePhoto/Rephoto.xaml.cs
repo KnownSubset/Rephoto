@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework.Media;
 using RePhoto.ViewModels;
 using GestureEventArgs = System.Windows.Input.GestureEventArgs;
@@ -13,6 +14,7 @@ using GestureEventArgs = System.Windows.Input.GestureEventArgs;
 namespace RePhoto {
     public partial class Rephoto : PhoneApplicationPage {
         private readonly CameraViewModel cameraViewModel = new CameraViewModel();
+        private readonly PhotoChooserTask photoChooserTask = new PhotoChooserTask();
         private readonly MediaLibrary library = new MediaLibrary();
         private PhotoCamera camera;
         private bool cameraInitialized;
@@ -25,6 +27,18 @@ namespace RePhoto {
             overlayedPicture.CreateOptions = BitmapCreateOptions.None;
             overlayedPicture.UriSource = new Uri("/SplashScreenImage.jpg", UriKind.Relative);
             cameraViewModel.OverlayedPicture = new WriteableBitmap(overlayedPicture);
+            photoChooserTask.Completed += PhotoChooserTaskOnCompleted;
+            photoChooserTask.ShowCamera = true;
+        }
+
+        private void PhotoChooserTaskOnCompleted(object sender, PhotoResult photoResult) {
+            if (photoResult.TaskResult.Equals(TaskResult.OK)) {
+                var bitmapImage = new BitmapImage();
+                bitmapImage.CreateOptions = BitmapCreateOptions.None;
+                bitmapImage.SetSource(photoResult.ChosenPhoto);
+                Deployment.Current.Dispatcher.BeginInvoke(()=>cameraViewModel.OverlayedPicture = new WriteableBitmap(bitmapImage));
+            }
+            StartCameraService();
         }
 
         private void StartCameraService() {
@@ -159,7 +173,7 @@ namespace RePhoto {
             cameraViewModel.CameraInUse = false;
         }
 
-        private void ConfigureSettings(object sender, RoutedEventArgs e) {
+        private void ConfigureSettings(object sender, EventArgs eventArgs) {
             bool configuringSettings = !cameraViewModel.ConfiguringSettings;
             cameraViewModel.ConfiguringSettings = configuringSettings;
             cameraViewModel.CameraInUse = configuringSettings;
@@ -168,6 +182,10 @@ namespace RePhoto {
         private void CameraCaptureTap(object sender, GestureEventArgs e) {
             cameraViewModel.CameraInUse = true;
             camera.Focus();
+        }
+
+        private void ChooseOverlay(object sender, EventArgs e) {
+            photoChooserTask.Show();
         }
     }
 }

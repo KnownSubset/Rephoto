@@ -30,24 +30,8 @@
             <ImageBrush ImageSource="{Binding OpacityMask}" Stretch="None" />
           </Image.OpacityMask>
         </Image>
-        <!--<ProgressBar VerticalAlignment="Center"></ProgressBar>-->
+        <toolkit:PerformanceProgressBar x:Name="performanceProgressBar" VerticalAlignment="Center" />
       </Canvas>
-      <Grid Visibility="{Binding Picture, Converter={StaticResource NotNullToVisibilityConverter}}">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <Image Grid.Row="0" HorizontalAlignment="Right" Stretch="None" Source="/Images/appbar.basecircle.rest.png" Margin="0,0,25,0" />
-        <Button Grid.Row="0" HorizontalAlignment="Right" Click="CameraCaptureClick" Margin="0,3,0,0" BorderBrush="{x:Null}">
-          <Image Stretch="None" Source="/Images/appbar.feature.camera.rest.png" />
-        </Button>
-        <Image Grid.Row="1" HorizontalAlignment="Right" Stretch="None" Source="/Images/appbar.basecircle.rest.png" Margin="0,0,25,0" />
-        <Button Grid.Row="1" HorizontalAlignment="Right" Click="ConfigureSettings" Margin="0,3,0,0" BorderBrush="{x:Null}">
-          <Image Stretch="None" Source="/Images/appbar.feature.settings.rest.png" />
-        </Button>
-      </Grid>
 
       <StackPanel VerticalAlignment="Bottom" Visibility="{Binding ConfiguringSettings, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{StaticResource PhoneSemitransparentBrush}">
         <StackPanel.Resources>
@@ -63,7 +47,7 @@
         <TextBlock Text="opacity" Style="{StaticResource PhoneTextNormalStyle}" />
         <Slider Value="{Binding MaskOpacityLevel, Mode=TwoWay}" Minimum="0" Maximum="1" />
         <TextBlock Text="size" Style="{StaticResource PhoneTextNormalStyle}" />
-        <Slider Value="{Binding MaskSizeLevel, Mode=TwoWay}" Minimum="1" Maximum="100" />
+        <Slider Value="{Binding MaskSizeLevel, Mode=TwoWay}" Minimum="15" Maximum="200" />
       </StackPanel>
 
       <StackPanel Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
@@ -76,8 +60,9 @@
   <!--Sample code showing usage of ApplicationBar-->
   <phone:PhoneApplicationPage.ApplicationBar>
     <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-      <shell:ApplicationBarIconButton IconUri="/Images/appbar.check.rest.png" Text="done" Click="AcceptSettings" />
-      <shell:ApplicationBarIconButton IconUri="/Images/appbar.folder.rest.png" Text="select photo" Click="CameraCaptureClick" />
+      <shell:ApplicationBarIconButton IconUri="/Images/appbar.feature.settings.rest.png" Text="settings" Click="ConfigureSettings" />
+      <shell:ApplicationBarIconButton IconUri="/Images/appbar.feature.camera.rest.png" Text="snap photo" Click="CameraCaptureClick" />
+      <shell:ApplicationBarIconButton IconUri="/Images/appbar.folder.rest.png" Text="load photo" Click="ChooseOverlay" />
     </shell:ApplicationBar>
   </phone:PhoneApplicationPage.ApplicationBar>
 
