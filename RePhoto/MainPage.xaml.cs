@@ -33,5 +33,17 @@ namespace RePhoto
                 App.ViewModel.LoadData();
             }
         }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        {
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem != null)
+            {
+                var itemViewModel = listBox.SelectedItem as ItemViewModel;
+                NavigationService.Navigate(new Uri(itemViewModel.NavigationUri, UriKind.Relative));
+                listBox.SelectedItem = null;
+            }
+        }
+
     }
 }
