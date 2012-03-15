@@ -37,7 +37,8 @@
         <toolkit:PerformanceProgressBar x:Name="performanceProgressBar" VerticalAlignment="Center" />
       </Canvas>
 
-      <StackPanel VerticalAlignment="Bottom" Visibility="{Binding ConfiguringSettings, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{StaticResource PhoneSemitransparentBrush}" Margin="12,0,12,0">
+      <StackPanel VerticalAlignment="Bottom" Visibility="{Binding ConfiguringSettings, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{StaticResource PhoneBackgroundBrush}">
+        <StackPanel  Margin="12,0">
         <StackPanel.Resources>
           <Style TargetType="Slider">
             <Setter Property="Margin" Value="0,-5,0,-15" />
@@ -46,12 +47,14 @@
             <TextBlock Text="{Binding Key}" />
           </DataTemplate>
         </StackPanel.Resources>
+         
         <TextBlock Text="image masks" Style="{StaticResource PhoneTextNormalStyle}" />
         <toolkit:ListPicker ItemsSource="{Binding Fills}" SelectedItem="{Binding SelectedFill, Mode=TwoWay}" ItemTemplate="{StaticResource ImageMaskTemplate}" />
         <TextBlock Text="opacity" Style="{StaticResource PhoneTextNormalStyle}" />
         <Slider Value="{Binding MaskOpacityLevel, Mode=TwoWay}" Minimum="0" Maximum="1" />
         <TextBlock Text="size" Style="{StaticResource PhoneTextNormalStyle}" />
         <Slider Value="{Binding MaskSizeLevel, Mode=TwoWay}" Minimum="15" Maximum="200" />
+      </StackPanel>
       </StackPanel>
 
       <StackPanel Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
