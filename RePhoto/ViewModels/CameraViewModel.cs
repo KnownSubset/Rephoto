@@ -15,7 +15,7 @@ namespace RePhoto.ViewModels {
         private int maskSizeLevel = 25;
         private WriteableBitmap opacityMask;
         private WriteableBitmap overlayedPicture;
-        private BitmapImage picture;
+        private WriteableBitmap picture;
         private KeyValuePair<string, Action> selectedFill;
         private int width = 480;
         private int height = 800;
@@ -32,7 +32,7 @@ namespace RePhoto.ViewModels {
             Fills = fills;
         }
 
-        public BitmapImage Picture
+        public WriteableBitmap Picture
         {
             get { return picture; }
             set {
@@ -147,7 +147,7 @@ namespace RePhoto.ViewModels {
         public override void LoadData() {}
 
         public void SavePhoto() {
-            var writeableBitmap = new WriteableBitmap(picture).Rotate(90);
+            var writeableBitmap = new WriteableBitmap(picture);
             resizedOverlay = OverlayedPicture.Resize(writeableBitmap.PixelWidth, writeableBitmap.PixelHeight, WriteableBitmapExtensions.Interpolation.Bilinear);
             writeableBitmap.ForEach(Fill);
               // Create a virtual store and file stream. Check for duplicate tempJPEG files.

@@ -24,8 +24,8 @@
         </Canvas.Background>
       </Canvas>
       <Canvas>
-        <Image MaxWidth="480" MaxHeight="800" Source="{Binding Picture}" Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" Stretch="Fill" />
-        <Image Source="{Binding OverlayedPicture}" Opacity="{Binding MaskOpacityLevel}">
+        <Image Width="480" Height="800" Source="{Binding Picture}" Visibility="{Binding Picture, Converter={StaticResource NullToVisibilityConverter}}" Stretch="UniformToFill" />
+        <Image Width="480" Height="800" Source="{Binding OverlayedPicture}" Opacity="{Binding MaskOpacityLevel}">
           <Image.OpacityMask>
             <ImageBrush ImageSource="{Binding OpacityMask}" Stretch="None" />
           </Image.OpacityMask>

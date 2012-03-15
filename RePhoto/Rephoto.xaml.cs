@@ -127,7 +127,7 @@ namespace RePhoto {
                 using (IsolatedStorageFileStream fileStream = myIsolatedStorage.OpenFile("temp.dat", FileMode.Open, FileAccess.Read)) {
                     var picture = new BitmapImage();
                     picture.SetSource(fileStream);
-                    cameraViewModel.Picture = picture;
+                    cameraViewModel.Picture = new WriteableBitmap(picture).Rotate(90);
                 }
             }
         }
