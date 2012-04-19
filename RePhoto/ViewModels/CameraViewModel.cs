@@ -17,8 +17,8 @@ namespace RePhoto.ViewModels {
         private WriteableBitmap overlayedPicture;
         private WriteableBitmap picture;
         private KeyValuePair<string, Action> selectedFill;
-        private int width = 480;
-        private int height = 800;
+        private int width = 456;
+        private int height = 696;
         private WriteableBitmap resizedOverlay;
 
         public CameraViewModel()
@@ -148,8 +148,13 @@ namespace RePhoto.ViewModels {
 
         public void SavePhoto() {
             var writeableBitmap = new WriteableBitmap(picture);
-            resizedOverlay = OverlayedPicture.Resize(writeableBitmap.PixelWidth, writeableBitmap.PixelHeight, WriteableBitmapExtensions.Interpolation.Bilinear);
-            writeableBitmap.ForEach(Fill);
+            if (OverlayedPicture != null) {
+                var xRatio = (picture.PixelWidth * 1.0 / OverlayedPicture.PixelWidth) ;
+                var yRatio = (picture.PixelHeight * 1.0 / OverlayedPicture.PixelHeight) ;
+                var scale = Math.Min(xRatio, yRatio);
+                resizedOverlay = OverlayedPicture.Resize((int) (OverlayedPicture.PixelWidth * scale), (int) (OverlayedPicture.PixelHeight * scale), WriteableBitmapExtensions.Interpolation.Bilinear);
+                writeableBitmap.ForEach(Fill);
+            }
               // Create a virtual store and file stream. Check for duplicate tempJPEG files.
             string tempJPEG = CreateFileName();
             var myStore = IsolatedStorageFile.GetUserStoreForApplication();
@@ -167,7 +172,7 @@ namespace RePhoto.ViewModels {
         }
 
         private Color Fill(int x, int y, Color originalColor) {
-            bool isPixelTransparent = OpacityMask.GetPixel(x, y).A == 0;
+            bool isPixelTransparent = OpacityMask.GetPixel(x, y).A == 0 && resizedOverlay.GetPixel(x, y) != null;
             Color pixel = isPixelTransparent ? originalColor : resizedOverlay.GetPixel(x, y);
             return isPixelTransparent ? originalColor : AverageColors(originalColor, pixel);
         }

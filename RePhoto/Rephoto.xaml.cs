@@ -23,10 +23,6 @@ namespace RePhoto {
             InitializeComponent();
             StartCameraService();
             DataContext = cameraViewModel;
-            var overlayedPicture = new BitmapImage();
-            overlayedPicture.CreateOptions = BitmapCreateOptions.None;
-            overlayedPicture.UriSource = new Uri("/SplashScreenImage.jpg", UriKind.Relative);
-            cameraViewModel.OverlayedPicture = new WriteableBitmap(overlayedPicture);
             photoChooserTask.Completed += PhotoChooserTaskOnCompleted;
             photoChooserTask.ShowCamera = true;
         }
@@ -36,7 +32,11 @@ namespace RePhoto {
                 var bitmapImage = new BitmapImage();
                 bitmapImage.CreateOptions = BitmapCreateOptions.None;
                 bitmapImage.SetSource(photoResult.ChosenPhoto);
-                Deployment.Current.Dispatcher.BeginInvoke(()=>cameraViewModel.OverlayedPicture = new WriteableBitmap(bitmapImage));
+                var overlayedPicture = new WriteableBitmap(bitmapImage);
+                if (overlayedPicture.PixelWidth > overlayedPicture.PixelHeight) {
+                    overlayedPicture = overlayedPicture.Rotate(90);
+                }
+                Deployment.Current.Dispatcher.BeginInvoke(()=>cameraViewModel.OverlayedPicture = overlayedPicture);
             }
             StartCameraService();
         }
