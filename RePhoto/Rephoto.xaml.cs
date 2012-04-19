@@ -155,8 +155,12 @@ namespace RePhoto {
         }
 
         private void CameraCaptureClick(object sender, EventArgs e) {
-            cameraViewModel.CameraInUse = true;
-            camera.Focus();
+            lock (this) {
+                if (!cameraViewModel.CameraInUse) {
+                    cameraViewModel.CameraInUse = true;
+                    camera.Focus();
+                }
+            }
         }
 
         private void SavePhoto(object sender, RoutedEventArgs e) {
@@ -166,6 +170,7 @@ namespace RePhoto {
 
         private void RetakePhoto(object sender, RoutedEventArgs e) {
             cameraViewModel.Picture = null;
+            cameraViewModel.CameraInUse = false;
         }
 
         private void AcceptSettings(object sender, EventArgs e) {

@@ -11,18 +11,17 @@ namespace RePhoto.ViewModels {
     public class CameraViewModel : ViewModelBase {
         private bool cameraInUse;
         private bool configuringSettings;
+        private int height = 696;
         private double maskOpacityLevel = .5;
         private int maskSizeLevel = 25;
         private WriteableBitmap opacityMask;
         private WriteableBitmap overlayedPicture;
         private WriteableBitmap picture;
+        private WriteableBitmap resizedOverlay;
         private KeyValuePair<string, Action> selectedFill;
         private int width = 456;
-        private int height = 696;
-        private WriteableBitmap resizedOverlay;
 
-        public CameraViewModel()
-        {
+        public CameraViewModel() {
             IDictionary<string, Action> fills = new Dictionary<string, Action>();
             SelectedFill = new KeyValuePair<string, Action>("checkerboard", CheckerBoard);
             fills.Add(selectedFill);
@@ -32,8 +31,7 @@ namespace RePhoto.ViewModels {
             Fills = fills;
         }
 
-        public WriteableBitmap Picture
-        {
+        public WriteableBitmap Picture {
             get { return picture; }
             set {
                 picture = value;
@@ -41,8 +39,7 @@ namespace RePhoto.ViewModels {
             }
         }
 
-        public WriteableBitmap OverlayedPicture
-        {
+        public WriteableBitmap OverlayedPicture {
             get { return overlayedPicture; }
             set {
                 overlayedPicture = value;
@@ -66,8 +63,7 @@ namespace RePhoto.ViewModels {
             }
         }
 
-        public WriteableBitmap OpacityMask
-        {
+        public WriteableBitmap OpacityMask {
             get { return opacityMask; }
             set {
                 opacityMask = value;
@@ -101,22 +97,22 @@ namespace RePhoto.ViewModels {
         }
 
         public IDictionary<string, Action> Fills { get; set; }
-        public void SetImageSize(Size resolution){
-            this.width = (int) resolution.Width;
-            this.height = (int) resolution.Height;
+
+        public void SetImageSize(Size resolution) {
+            width = (int) resolution.Width;
+            height = (int) resolution.Height;
         }
-        
 
         public void CheckerBoard() {
             var opacityMask = new WriteableBitmap(width, height);
             for (int i = 0; i < width/MaskSizeLevel; i += 2) {
                 for (int j = 0; j < height/MaskSizeLevel; j += 2) {
-                    opacityMask.FillRectangle(i*MaskSizeLevel, j*MaskSizeLevel, (i + 1)*MaskSizeLevel, (j + 1)*MaskSizeLevel,Colors.Black);
+                    opacityMask.FillRectangle(i*MaskSizeLevel, j*MaskSizeLevel, (i + 1)*MaskSizeLevel, (j + 1)*MaskSizeLevel, Colors.Black);
                 }
             }
             for (int i = 1; i < width/MaskSizeLevel; i += 2) {
                 for (int j = 1; j < height/MaskSizeLevel; j += 2) {
-                    opacityMask.FillRectangle(i*MaskSizeLevel, j*MaskSizeLevel, (i + 1)*MaskSizeLevel, (j + 1)*MaskSizeLevel,Colors.Black);
+                    opacityMask.FillRectangle(i*MaskSizeLevel, j*MaskSizeLevel, (i + 1)*MaskSizeLevel, (j + 1)*MaskSizeLevel, Colors.Black);
                 }
             }
             OpacityMask = opacityMask;
@@ -125,7 +121,7 @@ namespace RePhoto.ViewModels {
         private void VerticalLines() {
             var opacityMask = new WriteableBitmap(width, height);
             for (int i = 0; i < width/MaskSizeLevel; i += 2) {
-                opacityMask.FillRectangle(i * MaskSizeLevel, 0, (i + 1) * MaskSizeLevel, height, Colors.Black);
+                opacityMask.FillRectangle(i*MaskSizeLevel, 0, (i + 1)*MaskSizeLevel, height, Colors.Black);
             }
             OpacityMask = opacityMask;
         }
@@ -133,13 +129,13 @@ namespace RePhoto.ViewModels {
         private void HorizontalLines() {
             var opacityMask = new WriteableBitmap(width, height);
             for (int j = 0; j < height/MaskSizeLevel; j += 2) {
-                opacityMask.FillRectangle(0, j * MaskSizeLevel, width, (j + 1) * MaskSizeLevel, Colors.Black);
+                opacityMask.FillRectangle(0, j*MaskSizeLevel, width, (j + 1)*MaskSizeLevel, Colors.Black);
             }
             OpacityMask = opacityMask;
         }
 
         private void FullScreen() {
-            var writeableBitmap = new WriteableBitmap(width,height);
+            var writeableBitmap = new WriteableBitmap(width, height);
             writeableBitmap.Clear(Colors.Black);
             OpacityMask = writeableBitmap;
         }
@@ -149,16 +145,16 @@ namespace RePhoto.ViewModels {
         public void SavePhoto() {
             var writeableBitmap = new WriteableBitmap(picture);
             if (OverlayedPicture != null) {
-                var xRatio = (picture.PixelWidth * 1.0 / OverlayedPicture.PixelWidth) ;
-                var yRatio = (picture.PixelHeight * 1.0 / OverlayedPicture.PixelHeight) ;
-                var scale = Math.Min(xRatio, yRatio);
-                resizedOverlay = OverlayedPicture.Resize((int) (OverlayedPicture.PixelWidth * scale), (int) (OverlayedPicture.PixelHeight * scale), WriteableBitmapExtensions.Interpolation.Bilinear);
+                double xRatio = (picture.PixelWidth*1.0/OverlayedPicture.PixelWidth);
+                double yRatio = (picture.PixelHeight*1.0/OverlayedPicture.PixelHeight);
+                double scale = Math.Min(xRatio, yRatio);
+                resizedOverlay = OverlayedPicture.Resize((int) (OverlayedPicture.PixelWidth*scale), (int) (OverlayedPicture.PixelHeight*scale), WriteableBitmapExtensions.Interpolation.Bilinear);
                 writeableBitmap.ForEach(Fill);
             }
-              // Create a virtual store and file stream. Check for duplicate tempJPEG files.
+            // Create a virtual store and file stream. Check for duplicate tempJPEG files.
             string tempJPEG = CreateFileName();
-            var myStore = IsolatedStorageFile.GetUserStoreForApplication();
-            if (myStore.FileExists(tempJPEG)){
+            IsolatedStorageFile myStore = IsolatedStorageFile.GetUserStoreForApplication();
+            if (myStore.FileExists(tempJPEG)) {
                 myStore.DeleteFile(tempJPEG);
             }
             IsolatedStorageFileStream myFileStream = myStore.CreateFile(tempJPEG);
@@ -189,6 +185,5 @@ namespace RePhoto.ViewModels {
         private string CreateFileName() {
             return Guid.NewGuid() + ".jpg";
         }
-
     }
 }
